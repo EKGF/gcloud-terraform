@@ -44,7 +44,7 @@ You'll need to:
  2. Mount your project directory at '/workspace' when you run docker
  ```sh
 docker run -it --rm -e GCLOUD_SERVICE_KEY=${GCLOUD_SERVICE_KEY} \
-  --mount type=bind,source=$PWD,target=/workdir \
-  -w="/workdir" \
+  --mount type=bind,source=$PWD,target=/workspace \
+  --workdir="/workspace" \
   ekgf/terraform <command>
 ```

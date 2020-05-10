@@ -2,7 +2,7 @@
 #
 # Keep this in sync with cloudbuild.yaml
 #
-_IMAGE_NAME="ekgf/terraform"
+_IMAGE_NAME="ekgf/gcloud-terraform"
 _IMAGE_VERSION="latest"
 _MANUALLY_INCREMENTED_IMAGE_VERSION="0.1"
 

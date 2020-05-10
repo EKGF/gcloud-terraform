@@ -1,7 +1,7 @@
 FROM alpine:3.9 as downloader
 
-ARG TERRAFORM_VERSION=0.12.15
-ARG TERRAFORM_VERSION_SHA256SUM="2acb99936c32f04d0779c3aba3552d6d2a1fa32ed63cbca83a84e58714f22022"
+ARG TERRAFORM_VERSION=0.12.24
+ARG TERRAFORM_VERSION_SHA256SUM="602d2529aafdaa0f605c06adb7c72cfb585d8aa19b3f4d8d189b42589e27bf11"
 ARG TERRAFORM_SOPS_VERSION=0.5.0
 
 RUN apk --no-cache add curl unzip
@@ -17,16 +17,31 @@ RUN file="terraform_${TERRAFORM_VERSION}_linux_amd64.zip" ; \
     echo "Downloading ${name} from ${url}" >&2 && \
     curl -L ${url} > /tmp/sops.zip && \
     mkdir -p /downloader/sops && cd /downloader/sops && unzip /tmp/sops.zip && \
-    mv -v "${name}" terraform-provider-sops && ls -al
+    pwd && ls -al
 
 #
 # Final dockerfile stage
 #
 FROM gcr.io/cloud-builders/gcloud
 
-COPY --from=downloader /downloader/sops/terraform-provider-sops /root/.terraform.d/plugins/
+#
+# Current user is root with home /root
+#
+WORKDIR /root
+
+COPY --from=downloader /downloader/sops/terraform-provider-sops* ./.terraform.d/plugins/linux_amd64/
 COPY --from=downloader /usr/bin/terraform /usr/bin/terraform
-COPY entrypoint.sh /root/entrypoint.sh
-RUN chmod u+x /root/entrypoint.sh
+COPY entrypoint.sh ./entrypoint.sh
+RUN ls -al; chmod -v +x ./entrypoint.sh ; ls -al
+
+#
+# Provide the following environment variables when you run the container:
+#
+#ENV TF_VAR_project-name=yourprojectid
+#ENV TF_VAR_region=yourregion
+#ENV _BUCKET=yourbucket
+#ENV _INFRA_DIR=infrastructure
+#ENV GCLOUD_SERVICE_KEY="<base64 encoded service account key file>
 
 ENTRYPOINT ["/root/entrypoint.sh"]
+

@@ -1,5 +1,11 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+
+#
+# For some reason the home directory was changed in the base image
+# from /root to /builder/home so we're simply copying the plugins
+# there then. Doing this in the Dockerfile doesn't work.
+#
+cp -R /root/.terraform.d /builder/home/
 
 active_account=""
 function get-active-account() {
@@ -46,10 +52,19 @@ elif [[ (-z "$active_account") &&  (-z "$GCLOUD_SERVICE_KEY") ]]; then
   service-account-usage
 fi
 
+echo "Terraform version:"
+terraform version
+
+echo HOME=${HOME} ; (set -x ; cd ~ ; pwd -L)
+
+echo "Terraform init -backend-config=bucket=\"$_BUCKET\" \"$_INFRA_DIR\""
 terraform init -backend-config=bucket="$_BUCKET" "$_INFRA_DIR"
+
+echo "Terraform validate:"
+terraform validate "$_INFRA_DIR"
+
+echo "Terraform providers:"
+terraform providers "$_INFRA_DIR"
 
 echo "Running: terraform $@"
 terraform "$@"
-
-
-
