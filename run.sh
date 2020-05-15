@@ -15,5 +15,5 @@ docker run \
   --interactive --tty --rm \
   --mount type=bind,source=${local_workdir},target=/workdir \
   --workdir="/workdir" \
-  "$(< image.id)" "$@"
+  "$(< .image-id)" "$@"
 exit $?

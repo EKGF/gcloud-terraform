@@ -1,8 +1,8 @@
 FROM alpine:3.9 as downloader
 
-ARG TERRAFORM_VERSION=0.12.24
-ARG TERRAFORM_VERSION_SHA256SUM="602d2529aafdaa0f605c06adb7c72cfb585d8aa19b3f4d8d189b42589e27bf11"
-ARG TERRAFORM_SOPS_VERSION=0.5.0
+ARG TERRAFORM_VERSION="0.12.25"
+ARG TERRAFORM_VERSION_SHA256SUM="e95daabd1985329f87e6d40ffe7b9b973ff0abc07a403f767e8658d64d733fb0"
+ARG TERRAFORM_SOPS_VERSION="0.5.0"
 
 RUN apk --no-cache add curl unzip
 
@@ -22,7 +22,7 @@ RUN file="terraform_${TERRAFORM_VERSION}_linux_amd64.zip" ; \
 #
 # Final dockerfile stage
 #
-FROM gcr.io/cloud-builders/gcloud
+FROM gcr.io/cloud-builders/gcloud:latest
 
 #
 # Current user is root with home /root
