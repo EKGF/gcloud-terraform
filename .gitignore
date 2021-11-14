@@ -1,4 +1,6 @@
 .image-id
 terraform.code-workspace
 env.vars
+.idea/
+
 
