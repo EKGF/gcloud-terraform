@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-_IMAGE_NAME="docker.io/ekgf/gcloud-terraform"
+_IMAGE_NAME="ghcr.io/ekgf/gcloud-terraform"
 _IMAGE_VERSION="latest"
-_MANUALLY_INCREMENTED_IMAGE_VERSION="0.0.6"
+_MANUALLY_INCREMENTED_IMAGE_VERSION="0.0.7"
 
 cd "${SCRIPT_DIR}" || exit 1
 
