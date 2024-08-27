@@ -1,17 +1,18 @@
-FROM alpine:3.14 as downloader
+FROM debian:12-slim as downloader
+LABEL maintainer="EKGF <info@ekgf.org>"
 
-ARG TERRAFORM_VERSION="1.0.11"
-ARG TERRAFORM_VERSION_SHA256SUM="eeb46091a42dc303c3a3c300640c7774ab25cbee5083dafa5fd83b54c8aca664"
-ARG TERRAFORM_SOPS_VERSION="0.6.3"
+ARG TERRAFORM_VERSION="1.9.5"
+ARG TERRAFORM_SOPS_VERSION="1.1.1"
 
-RUN apk --no-cache add curl unzip
+RUN apt-get update && apt-get install -y curl wget unzip gpg lsb-release
 
-RUN file="terraform_${TERRAFORM_VERSION}_linux_amd64.zip" ; \
-    url="https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}" ; \
-    wget "${url}/${file}" && \
-    echo "${TERRAFORM_VERSION_SHA256SUM}  ${file}" > checksum && sha256sum -c checksum && \
-    unzip ${file} -d /usr/bin && rm -f "${file}" && ls -al /usr/bin/terraform && \
-    name="terraform-provider-sops_${TERRAFORM_SOPS_VERSION}" && \
+RUN wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+RUN echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
+
+RUN apt-get update && apt-get install -y terraform
+
+RUN name="terraform-provider-sops_${TERRAFORM_SOPS_VERSION}" && \
     url="https://github.com/carlpett/terraform-provider-sops/releases/download/v${TERRAFORM_SOPS_VERSION}" && \
     url="${url}/${name}_linux_amd64.zip" && \
     echo "Downloading ${name} from ${url}" >&2 && \
@@ -23,6 +24,7 @@ RUN file="terraform_${TERRAFORM_VERSION}_linux_amd64.zip" ; \
 # Final dockerfile stage
 #
 FROM gcr.io/cloud-builders/gcloud:latest
+LABEL maintainer="EKGF <info@ekgf.org>"
 
 #
 # Current user is root with home /root
