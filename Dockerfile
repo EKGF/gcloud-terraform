@@ -1,8 +1,9 @@
-FROM debian:12-slim as downloader
+FROM debian:12-slim AS downloader
 LABEL maintainer="EKGF <info@ekgf.org>"
 
 ARG TERRAFORM_VERSION="1.9.5"
 ARG TERRAFORM_SOPS_VERSION="1.1.1"
+ARG DEBIAN_FRONTEND="noninteractive"
 
 RUN apt-get update && apt-get install -y curl wget unzip gpg lsb-release
 
@@ -25,6 +26,9 @@ RUN name="terraform-provider-sops_${TERRAFORM_SOPS_VERSION}" && \
 #
 FROM gcr.io/cloud-builders/gcloud:latest
 LABEL maintainer="EKGF <info@ekgf.org>"
+LABEL org.opencontainers.image.source="https://github.com/EKGF/gcloud-terraform"
+LABEL org.opencontainers.image.description="Terraform Cloud Builder. This builder can be used to run the terraform tool in the GCE environment."
+LABEL org.opencontainers.image.licenses=MIT
 
 #
 # Current user is root with home /root
